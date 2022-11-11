@@ -1,4 +1,6 @@
-from flask import Flask, jsonify
+import json
+
+from flask import Flask, jsonify, request
 
 from db import engine, Session
 
@@ -16,10 +18,26 @@ def hello_world():  # put application's code here
 
 @app.route('/crear-usuario', methods=["POST"])
 def crear_usuario():
+    data = json.loads(request.data)
+    if 'email' not in data:
+        return jsonify({"respuesta": "No estas enviando el username"})
+    if 'password' not in data:
+        return jsonify({"respuesta": "No estas enviando el password"})
+
+    if len(data["email"]) == 0:
+        return jsonify({"respuesta": "Username no puede estar vacio"})
+
+    if len(data["password"]) == 0:
+        return jsonify({"respuesta": "Password no puede estar vacio"})
+
     with engine.connect() as con:
-        nuevo_usuario = Usuario(email="hola1@gmail.com", password="123")
+
+        nuevo_usuario = Usuario(email=data["email"], password=data["password"])
         session.add(nuevo_usuario)
-        session.commit()
+        try:
+            session.commit()
+        except:
+            return jsonify({"detail": "El usuario ya fue creado"})
 
     return jsonify({"detail": "Usuario creado correctamente"})
 

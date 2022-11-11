@@ -18,3 +18,16 @@ app = Flask(__name__)
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+
+============================================
+-- create or replace procedure procedure_ejemplo(edad int)
+-- language plpgsql
+-- as $$
+-- begin
+--     select edad;
+--
+-- end; $$
+
+
+call procedure_ejemplo(2);
